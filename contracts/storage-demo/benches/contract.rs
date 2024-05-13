@@ -334,7 +334,7 @@ fn archid_setup(
     )
     .unwrap();
 
-    let user = app.init_account(&vec![arch(10000)]).unwrap();
+    let user = app.init_account(&vec![arch(1000000)]).unwrap();
 
     (registry, user)
 }
@@ -348,7 +348,7 @@ fn archid_iterations() -> Vec<usize> {
         (500, 25),
         (2500, 100),
         (20000, 2500),
-        (100000, 20000),
+        (100000, 5000),
     ] {
         while *a.last().unwrap() < limit {
             a.push(a.last().unwrap() + sum);
