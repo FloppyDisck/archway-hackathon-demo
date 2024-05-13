@@ -117,7 +117,7 @@ dependencies = [
 [[package]]
 name = "archway_test_tube"
 version = "0.1.0"
-source = "git+https://github.com/archway-network/archway-test-tube.git#37590ed4de3e8bc6e9f52292699eb1a20badc25b"
+source = "git+https://github.com/archway-network/archway-test-tube.git#175542203cef124f6a5c6637b2140355da9eb517"
 dependencies = [
  "archway-proto",
  "bindgen",

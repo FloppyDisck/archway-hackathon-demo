@@ -1,6 +1,6 @@
 use archway_test_tube::test_tube::runner::*;
 use archway_test_tube::test_tube::{Account, Module, SigningAccount, Wasm};
-use archway_test_tube::{arch, harness_main, ArchwayApp, Bench, BenchSaveConfig, Console, Setup};
+use archway_test_tube::{arch, harness_main, ArchwayApp, Bench, BenchSaveConfig, Console, Setup, aarch};
 use cosmwasm_std::{Addr, Uint128};
 use storage_demo::msg::{ExecuteMsg, InstantiateMsg};
 
@@ -402,7 +402,7 @@ fn query_archid(bench: &mut Bench) {
             let wasm = Wasm::new(&setup.app);
 
             console.bench_msg(format!(
-                "Generating {} ArchID domains",
+                "Generating {} domains",
                 current
             ));
             for i in (last.unwrap_or(0) + 1)..=current {
@@ -411,7 +411,7 @@ fn query_archid(bench: &mut Bench) {
                     &archid_registry::msg::ExecuteMsg::Register {
                         name: format!("{:07}", i),
                     },
-                    &[arch(1)],
+                    &[aarch(1)],
                     &state.user,
                 )
                     .unwrap();
