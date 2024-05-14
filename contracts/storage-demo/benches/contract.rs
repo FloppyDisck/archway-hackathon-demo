@@ -59,7 +59,7 @@ fn store_iterations() -> Vec<usize> {
 }
 
 fn set_bench(bench: &mut Bench) {
-    bench.set_history(vec![BenchSaveConfig::package_version(4)])
+    bench.set_history(vec![BenchSaveConfig::package_version(4, pkg_version!())])
 }
 
 fn store_items(bench: &mut Bench) {
