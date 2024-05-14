@@ -1,6 +1,6 @@
 use archway_test_tube::test_tube::runner::*;
 use archway_test_tube::test_tube::{Account, Module, SigningAccount, Wasm};
-use archway_test_tube::{arch, harness_main, ArchwayApp, Bench, BenchSaveConfig, Console, Setup, aarch};
+use archway_test_tube::{arch, harness_main, ArchwayApp, Bench, BenchSaveConfig, Console, Setup, aarch, pkg_version};
 use cosmwasm_std::{Addr, Uint128};
 use storage_demo::msg::{ExecuteMsg, InstantiateMsg};
 
@@ -258,7 +258,7 @@ fn archid_setup(
     admin: &SigningAccount,
     console: &Console,
     // Returns archid account addr
-) -> (String, SigningAccount) {
+) -> (String, String, SigningAccount) {
     console.bench_msg("Initializing ArchId dApps".to_string());
 
     let wasm = Wasm::new(app);
@@ -336,7 +336,7 @@ fn archid_setup(
 
     let user = app.init_account(&vec![arch(1000000)]).unwrap();
 
-    (registry, user)
+    (registry, token, user)
 }
 
 fn archid_iterations() -> Vec<usize> {
@@ -371,14 +371,14 @@ fn query_archid(bench: &mut Bench) {
             let (app, account) = app();
 
             let demo = demo_setup(&app, &account, 1, console);
-            let (registry, user) = archid_setup(&app, &account, console);
+            let (registry, token, user) = archid_setup(&app, &account, console);
             let wasm = Wasm::new(&app);
 
             // Save registry
             wasm.execute(
                 &demo,
-                &ExecuteMsg::SetArchIdRegistry {
-                    contract: registry.clone(),
+                &ExecuteMsg::SetArchIdToken {
+                    contract: token.clone(),
                 },
                 &[],
                 &account,

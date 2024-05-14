@@ -1,14 +1,14 @@
 #[cfg(not(feature = "library"))]
 use cosmwasm_std::entry_point;
 use cosmwasm_std::{
-    to_json_binary, Binary, Deps, DepsMut, Env, MessageInfo, QueryRequest, Response, StdError,
+    to_json_binary, Binary, Deps, DepsMut, Env, MessageInfo, QueryRequest, Response,
     StdResult, WasmQuery,
 };
 // use cw2::set_contract_version;
 
 use crate::error::ContractError;
 use crate::msg::{ExecuteMsg, InstantiateMsg, QueryMsg};
-use crate::state::{Config, Foo, CONFIG, ITEMS, NUMBERS, REGISTRY};
+use crate::state::{Config, Foo, CONFIG, ITEMS, NUMBERS, TOKEN, ADMIN};
 
 /*
 // version info for migration info
@@ -23,8 +23,9 @@ pub fn instantiate(
     info: MessageInfo,
     msg: InstantiateMsg,
 ) -> Result<Response, ContractError> {
-    let config = Config::new(info.sender, msg.data_size);
+    let config = Config::new(msg.data_size);
     CONFIG.save(deps.storage, &config)?;
+    ADMIN.save(deps.storage, &info.sender)?;
     Ok(Response::new())
 }
 
@@ -37,25 +38,22 @@ pub fn execute(
 ) -> Result<Response, ContractError> {
     match msg {
         ExecuteMsg::StoreItems { count } => {
-            let mut items = vec![];
             for i in 0..count {
-                items.push(Foo::new(i));
+                ITEMS.save(deps.storage, i, &Foo::new(i))?;
             }
-            ITEMS.save(deps.storage, &items)?;
         }
         ExecuteMsg::AddItem { item } => {
-            ITEMS.update(deps.storage, |mut items| {
-                items.push(Foo::new(item));
-                Ok::<_, StdError>(items)
-            })?;
+            ITEMS.save(deps.storage, item, &Foo::new(item))?;
         }
         ExecuteMsg::ReadItem { name } => {
-            let items = ITEMS.load(deps.storage)?;
-            items.iter().find(|foo| foo.name == name).unwrap();
+            ITEMS.load(deps.storage, name.parse().unwrap())?;
         }
+
+
         ExecuteMsg::StoreNumber { iter, numb } => {
+            let n = numb.u128();
             for i in 0..iter {
-                NUMBERS.save(deps.storage, i, &numb)?;
+                NUMBERS.save(deps.storage, i, &n)?;
             }
         }
         ExecuteMsg::ReadNumber { iter } => {
@@ -63,25 +61,28 @@ pub fn execute(
                 NUMBERS.load(deps.storage, i)?;
             }
         }
+
+
         ExecuteMsg::SetAdmin { admin } => {
-            CONFIG.update(deps.storage, |mut config| {
-                config.admin = admin;
-                Ok::<_, StdError>(config)
-            })?;
+            ADMIN.save(deps.storage, &admin)?;
         }
         ExecuteMsg::GetAdmin {} => {
-            CONFIG.load(deps.storage)?.admin;
+            ADMIN.load(deps.storage)?;
         }
-        ExecuteMsg::SetArchIdRegistry { contract } => {
-            REGISTRY.save(deps.storage, &contract)?;
+
+
+        ExecuteMsg::SetArchIdToken { contract } => {
+            TOKEN.save(deps.storage, &contract)?;
         }
         ExecuteMsg::TestArchID { addr } => {
-            let _response: archid_registry::msg::ResolveAddressResponse = deps
+            let _response: cw721::TokensResponse = deps
                 .querier
                 .query(&QueryRequest::Wasm(WasmQuery::Smart {
-                    contract_addr: REGISTRY.load(deps.storage)?,
-                    msg: to_json_binary(&archid_registry::msg::QueryMsg::ResolveAddress {
-                        address: addr,
+                    contract_addr: TOKEN.load(deps.storage)?,
+                    msg: to_json_binary(&cw721::Cw721QueryMsg::Tokens {
+                        owner: addr.to_string(),
+                        start_after: None,
+                        limit: None,
                     })
                     .unwrap(),
                 }))

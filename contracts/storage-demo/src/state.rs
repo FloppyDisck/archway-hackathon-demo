@@ -5,7 +5,6 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, JsonSchema)]
 pub struct Config {
-    pub admin: Addr,
     pub data: Vec<u8>,
 }
 
@@ -25,17 +24,21 @@ impl Foo {
 }
 
 impl Config {
-    pub fn new(admin: Addr, size: u64) -> Self {
+    pub fn new(size: u64) -> Self {
         let mut data = vec![];
         for _ in 0..size {
             data.push(u8::MAX);
         }
 
-        Self { admin, data }
+        Self { data }
     }
 }
 
-pub const ITEMS: Item<Vec<Foo>> = Item::new("items");
-pub const NUMBERS: Map<u64, Uint128> = Map::new("numbers");
+pub const ITEMS: Map<u64, Foo> = Map::new("items");
+
+pub const NUMBERS: Map<u64, u128> = Map::new("numbers");
+
+pub const ADMIN: Item<Addr> = Item::new("admin");
 pub const CONFIG: Item<Config> = Item::new("config");
-pub const REGISTRY: Item<String> = Item::new("registry");
+
+pub const TOKEN: Item<String> = Item::new("registry");

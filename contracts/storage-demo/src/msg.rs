@@ -43,7 +43,7 @@ pub enum ExecuteMsg {
     GetAdmin {},
 
     // **** NetWars reference ****
-    SetArchIdRegistry {
+    SetArchIdToken {
         contract: String,
     },
     /// Test archid query
