@@ -1,6 +1,6 @@
 use archway_test_tube::test_tube::runner::*;
 use archway_test_tube::test_tube::{Account, Module, SigningAccount, Wasm};
-use archway_test_tube::{arch, harness_main, ArchwayApp, Bench, BenchSaveConfig, Console, Setup, aarch};
+use archway_test_tube::{arch, harness_main, ArchwayApp, Bench, BenchSaveConfig, Console, Setup, aarch, pkg_version};
 use cosmwasm_std::{Addr, Uint128};
 use storage_demo::msg::{ExecuteMsg, InstantiateMsg};
 
@@ -59,7 +59,7 @@ fn store_iterations() -> Vec<usize> {
 }
 
 fn set_bench(bench: &mut Bench) {
-    bench.set_history(vec![BenchSaveConfig::package_version(4)])
+    bench.set_history(vec![BenchSaveConfig::package_version(4, pkg_version!())])
 }
 
 fn store_items(bench: &mut Bench) {
